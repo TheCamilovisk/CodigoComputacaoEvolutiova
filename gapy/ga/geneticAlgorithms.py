@@ -11,12 +11,8 @@ Docente: Prof. Dr. Roberto Celio Limao de Oliveira
 # AQUI EH IMPLEMENTADA A CLASSE DO AG
 
 
-import cv2
-import random as rd
 import numpy as np
-from ..aux import aux
 from gapy.ga import routines
-import matplotlib
 import matplotlib.pyplot as plt
 
 

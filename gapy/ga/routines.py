@@ -10,7 +10,7 @@ Docente: Prof. Dr. Roberto Celio Limao de Oliveira
 
 import random as rd
 import numpy as np
-from ..aux import aux
+from ..utils import utils
 import gapy.ga.chromossome as ch
 
 
@@ -70,8 +70,8 @@ def crossingOnePoint(nvar, lvar, tc, generation, ls, li):
 
     while i < (len(generation) / 2):
         p = selection(generation)
-        p1 = aux.list2str(p[0])
-        p2 = aux.list2str(p[1])
+        p1 = utils.list2str(p[0])
+        p2 = utils.list2str(p[1])
 
         if rd.random() <= tc:
             point = rd.randint(1, sum(lvar) - 2)

@@ -12,8 +12,7 @@ Docente: Prof. Dr. Roberto Celio Limao de Oliveira
 import random as rd
 from math import sin, sqrt
 import numpy as np
-from ..aux import aux
-from gapy.ga import routines
+from ..utils import utils
 
 
 class Chromossome:
@@ -35,12 +34,12 @@ class Chromossome:
         self.ls = ls
         self.li = li
         if sequence is None:
-            self.sequence = aux.randomSequence(self.lvar)
+            self.sequence = utils.randomSequence(self.lvar)
         else:
             self.sequence = sequence
         self.sl = [0, 0]
 
-        self.coords = aux.bin2real(
+        self.coords = utils.bin2real(
             self.nvar, self.lvar, self.sequence, self.ls, self.li
         )
         self.fitness = self.function()
