@@ -62,6 +62,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--tm", help="Crossover rate", type=float, required=False, default=1e-2
     )
+    parser.add_argument(
+        "--em", help="Elitism mode", type=int, required=False, default=0
+    )
+    parser.add_argument(
+        "--gap", help="GAP", type=float, required=False, default=0
+    )
     args = parser.parse_args()
     precisions = [int(x) for x in eval(args.precisions)]
     x = geneticAlgorithms.GeneticAlgorithms(
@@ -72,6 +78,8 @@ if __name__ == "__main__":
         args.populationSize,
         args.lowerBound,
         args.upperBound,
+        args.em,
+        args.gap,
         args.tc,
         args.tm,
     )

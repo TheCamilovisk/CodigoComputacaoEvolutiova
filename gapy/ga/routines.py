@@ -43,24 +43,33 @@ def newGeneration(nvar, lvar, populationSize, ls, li):
 
 def selection(generation):
     # Funcao de selecao de pais
+    while True:
+        x = rd.random()
+        y = rd.random()
+        parents = [0,0]
 
-    x = rd.random()
-    y = rd.random()
-    parents = []
+        for i in range(len(generation)):
+            if x > generation[i].sl[0] and x <= generation[i].sl[1]:
+                parents[0] = i
+            else:
+                pass
 
-    for i in range(len(generation)):
-        if x > generation[i].sl[0] and x <= generation[i].sl[1]:
-            parents.append(generation[i].sequence)
-        else:
-            pass
+            if y > generation[i].sl[0] and y <= generation[i].sl[1]:
+                parents[1] = i
+            else:
+                pass
+        if parents[0] != parents[1]:
+            break
 
-        if y > generation[i].sl[0] and y <= generation[i].sl[1]:
-            parents.append(generation[i].sequence)
-        else:
-            pass
+    return [generation[parents[0]].sequence, generation[parents[1]].sequence]
 
-    return parents
+def elitism(generation, mode=1, gap=0):
+    generation.sort(key=lambda x: x.fitness, reverse=True)
 
+    if mode == 1:
+        return generation[0]
+    elif mode == 2:
+        return generation[:int(gap*len(generation))]
 
 def crossingOnePoint(nvar, lvar, tc, generation, ls, li):
     # Funcao de Crossover

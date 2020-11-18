@@ -26,7 +26,7 @@ def objective(x, y):
 
 class GeneticAlgorithms:
     def __init__(
-        self, nvar, lvar, ngenerations, nruns, populationSize, ls, li, tc=0.5, tm=8e-4
+        self, nvar, lvar, ngenerations, nruns, populationSize, ls, li, elitism_mode=0, gap=0, tc=0.5, tm=8e-4
     ):
 
         self.nvar = nvar  # Number of variables
@@ -44,6 +44,8 @@ class GeneticAlgorithms:
         self.ls = ls  # Upper bound
         self.li = li  # Lower bound
         self.var = 0
+        self.elitism_mode = elitism_mode
+        self.gap = gap
 
     def run(self):
 
@@ -71,6 +73,12 @@ class GeneticAlgorithms:
                     )
                 ]
                 self.generations[-1] = routines.mutation(self.generations[-1], self.tm)
+                if self.elitism_mode == 0:
+                    pass
+                elif self.elitism_mode == 1:
+                    self.generations[-1][0] = routines.elitism(self.generations[-2])
+                elif self.elitism_mode == 2:
+                    self.generations[-1][:int(self.gap*len(self.generations[-2]))] = routines.elitism(self.generations[-2], self.elitism_mode, self.gap)
                 # print("Run/Generation = {}/{}".format(n, m))
                 m += 1
             n += 1
