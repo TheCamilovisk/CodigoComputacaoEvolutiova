@@ -70,7 +70,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     precisions = [int(x) for x in eval(args.precisions)]
-    x = geneticAlgorithms.GeneticAlgorithms(
+    ag = geneticAlgorithms.GeneticAlgorithms(
         args.nvar,
         calcNumberOfBits(precisions, args.lowerBound, args.upperBound),
         args.ngenerations,
@@ -83,5 +83,5 @@ if __name__ == "__main__":
         args.tc,
         args.tm,
     )
-    x.run()
-    x.plotting()
+    ag.run()
+    ag.plotting()

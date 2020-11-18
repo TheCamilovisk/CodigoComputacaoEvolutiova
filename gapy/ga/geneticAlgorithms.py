@@ -122,16 +122,18 @@ class GeneticAlgorithms:
 
     def plotting(self):
         keys = range(self.ngenerations)
+        
+        fig, ax = plt.subplots(1, 1)
+        mean = np.array(self.mean).mean(0)
+        std = np.array(self.std).mean(0)
+        ax.plot(mean, "k-", color="green")
+        ax.fill_between(keys, mean - std, mean + std, facecolor="blue", alpha=0.5)
+        ax.set_title("Performance Média entre as {} épocas".format(self.nruns))
+        ax.set_xlabel("Gerações")
+        ax.set_ylabel("Aptidão")
+        ax.grid()
 
-        for i in range(0, self.nruns):
-            # plt.figure()
-            # plt.plot(keys, self.max[i], "k-", label="Maximum", color="blue")
-            # plt.plot(keys, self.min[i], "k-", label="Minimum", color="green")
-            # plt.plot(keys, self.mean[i], "k-", label="Mean", color="red")
-            # plt.title("Performance - Max = {}".format(max(self.max[i])))
-            # plt.xlabel("Generations")
-            # plt.ylabel("Fitness")
-
+        for i in [np.random.randint(0, self.nruns)]:
             fig, (ax1, ax2) = plt.subplots(1, 2)
             mean = np.array(self.mean[i])
             std = np.array(self.std[i])
@@ -140,10 +142,8 @@ class GeneticAlgorithms:
             ax2.set_title("Performance Média")
             ax2.set_xlabel("Gerações")
             ax2.set_ylabel("Aptidão")
-            # ax2.legend()
             ax2.grid()
-            # plt.legend()
-            # plt.grid()
+
             ax1.plot(keys, self.max[i], "k-", label="Maximum", color="blue")
             ax1.plot(keys, self.min[i], "k-", label="Minimum", color="green")
             ax1.plot(keys, self.mean[i], "k-", label="Mean", color="red")
@@ -202,7 +202,7 @@ class GeneticAlgorithms:
             ax13.set(title=f"Generation {gen_i + 1}")
 
             ax21.contourf(xx, yy, z)
-            gen_i = 249
+            gen_i = 29
             gen = gCoords[gen_i]
             fitness = objective(gen[:, 0], gen[:, 1])
             max_x, max_y = gen[fitness.argmax()]
@@ -215,7 +215,7 @@ class GeneticAlgorithms:
             ax21.set(title=f"Generation {gen_i + 1}")
 
             ax22.contourf(xx, yy, z)
-            gen_i = 499
+            gen_i = 39
             gen = gCoords[gen_i]
             fitness = objective(gen[:, 0], gen[:, 1])
             max_x, max_y = gen[fitness.argmax()]
@@ -228,7 +228,7 @@ class GeneticAlgorithms:
             ax22.set(title=f"Generation {gen_i + 1}")
 
             ax23.contourf(xx, yy, z)
-            gen_i = 999
+            gen_i = 49
             gen = gCoords[gen_i]
             fitness = objective(gen[:, 0], gen[:, 1])
             max_x, max_y = gen[fitness.argmax()]
