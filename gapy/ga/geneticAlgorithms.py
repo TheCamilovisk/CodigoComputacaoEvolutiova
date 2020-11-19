@@ -132,7 +132,7 @@ class GeneticAlgorithms:
         ax.plot(max_val, "k-", color="red")
         ax.fill_between(keys, mean - std, mean + std, facecolor="blue", alpha=0.5)
         ax.fill_between(keys, max_val - np.array(self.max).std(0), max_val + np.array(self.max).std(0), facecolor="blue", alpha=0.5)
-        ax.set_title("Performance Média entre as {} populações iniciais".format(self.nruns))
+        ax.set_title("Performance Média entre as {} populações iniciais".format(self.nInitialPopulations))
         ax.set_xlabel("Gerações")
         ax.set_ylabel("Aptidão")
         ax.grid()
