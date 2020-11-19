@@ -51,6 +51,7 @@ class GeneticAlgorithms:
     def run(self):
 
         for epoch in range(self.nInitialPopulations):
+            print("Epoch {}".format(epoch))
             n = 0
 
             initial = routines.newGeneration(
@@ -125,9 +126,12 @@ class GeneticAlgorithms:
         
         fig, ax = plt.subplots(1, 1)
         mean = np.array(self.mean).mean(0)
+        max_val = np.array(self.max).mean(0)
         std = np.array(self.std).mean(0)
         ax.plot(mean, "k-", color="green")
+        ax.plot(max_val, "k-", color="red")
         ax.fill_between(keys, mean - std, mean + std, facecolor="blue", alpha=0.5)
+        ax.fill_between(keys, max_val - np.array(self.max).std(0), max_val + np.array(self.max).std(0), facecolor="blue", alpha=0.5)
         ax.set_title("Performance Média entre as {} populações iniciais".format(self.nruns))
         ax.set_xlabel("Gerações")
         ax.set_ylabel("Aptidão")
