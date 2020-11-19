@@ -46,7 +46,7 @@ def selection(generation):
     while True:
         x = rd.random()
         y = rd.random()
-        parents = [0,0]
+        parents = [0, 0]
 
         for i in range(len(generation)):
             if x > generation[i].sl[0] and x <= generation[i].sl[1]:
@@ -63,13 +63,15 @@ def selection(generation):
 
     return [generation[parents[0]].sequence, generation[parents[1]].sequence]
 
+
 def elitism(generation, mode=1, gap=0):
     generation.sort(key=lambda x: x.fitness, reverse=True)
 
     if mode == 1:
         return generation[0]
     elif mode == 2:
-        return generation[:int(gap*len(generation))]
+        return generation[: int(gap * len(generation))]
+
 
 def crossingOnePoint(nvar, lvar, tc, generation, ls, li):
     # Funcao de Crossover

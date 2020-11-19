@@ -26,12 +26,13 @@ def objective(x, y):
 
 class GeneticAlgorithms:
     def __init__(
-        self, nvar, lvar, ngenerations, nruns, populationSize, ls, li, elitism_mode=0, gap=0, tc=0.5, tm=8e-4
+        self, nvar, lvar, ngenerations, nruns, populationSize, nInitialPopulations, ls, li, elitism_mode=0, gap=0, tc=0.5, tm=8e-4
     ):
 
         self.nvar = nvar  # Number of variables
         self.lvar = lvar  # Variabels lengths
         self.ngenerations = ngenerations  # Number of generations
+        self.nInitialPopulations = nInitialPopulations
         self.generations = []
         self.nruns = nruns  # Number of runs
         self.populationSize = populationSize  # Population size
@@ -49,76 +50,75 @@ class GeneticAlgorithms:
 
     def run(self):
 
-        n = 0
+        for epoch in range(self.nInitialPopulations):
+            n = 0
 
-        while n < self.nruns:
-            # Creating generations
-            self.generations += [
-                routines.newGeneration(
-                    self.nvar, self.lvar, self.populationSize, self.ls, self.li
-                )
-            ]
-            # print("Run/Generation = {}/{}".format(n, 0))
-            m = 1
-            while m < self.ngenerations:
-                # Crossover and mutation routines
-                self.generations += [
-                    routines.crossingOnePoint(
-                        self.nvar,
-                        self.lvar,
-                        self.tc,
-                        self.generations[-1],
-                        self.ls,
-                        self.li,
+            initial = routines.newGeneration(
+                        self.nvar, self.lvar, self.populationSize, self.ls, self.li
                     )
-                ]
-                self.generations[-1] = routines.mutation(self.generations[-1], self.tm)
-                if self.elitism_mode == 0:
-                    pass
-                elif self.elitism_mode == 1:
-                    self.generations[-1][0] = routines.elitism(self.generations[-2])
-                elif self.elitism_mode == 2:
-                    self.generations[-1][:int(self.gap*len(self.generations[-2]))] = routines.elitism(self.generations[-2], self.elitism_mode, self.gap)
-                # print("Run/Generation = {}/{}".format(n, m))
-                m += 1
-            n += 1
 
-        for i in range(0, len(self.generations), self.ngenerations):
-            maximum = []
-            minimum = []
-            mean = []
-            std = []
-            for j in range(i, i + self.ngenerations):
-                maximum += [float(max(map(lambda x: x.fitness, self.generations[j])))]
-                minimum += [float(min(map(lambda x: x.fitness, self.generations[j])))]
-                mean += [
-                    float(
-                        sum(
-                            map(
-                                lambda x: x.fitness / self.populationSize,
-                                self.generations[j],
+            while n < self.nruns:
+                # Creating generations
+                self.generations.append(initial)
+                # print("Run/Generation = {}/{}".format(n, 0))
+                m = 1
+                while m < self.ngenerations:
+                    # Crossover and mutation routines
+                    self.generations.append(routines.crossingOnePoint(
+                            self.nvar,
+                            self.lvar,
+                            self.tc,
+                            self.generations[-1],
+                            self.ls,
+                            self.li,
+                        ))
+                    self.generations[-1] = routines.mutation(self.generations[-1], self.tm)
+                    if self.elitism_mode == 0:
+                        pass
+                    elif self.elitism_mode == 1:
+                        self.generations[-1][0] = routines.elitism(self.generations[-2])
+                    elif self.elitism_mode == 2:
+                        self.generations[-1][:int(self.gap*self.populationSize)] = routines.elitism(self.generations[-2], self.elitism_mode, self.gap)
+                    # print("Run/Generation = {}/{}".format(n, m))
+                    m += 1
+                n += 1
+
+            for i in range(0, len(self.generations), self.ngenerations):
+                maximum = []
+                minimum = []
+                mean = []
+                std = []
+                for j in range(i, i + self.ngenerations):
+                    maximum += [float(max(map(lambda x: x.fitness, self.generations[j])))]
+                    minimum += [float(min(map(lambda x: x.fitness, self.generations[j])))]
+                    mean += [
+                        float(
+                            sum(
+                                map(
+                                    lambda x: x.fitness / self.populationSize,
+                                    self.generations[j],
+                                )
                             )
                         )
-                    )
-                ]
-                std += [
-                    float(
-                        sum(
-                            map(
-                                lambda x: (x.fitness - mean[-1]) ** 2
-                                / self.populationSize,
-                                self.generations[j],
+                    ]
+                    std += [
+                        float(
+                            sum(
+                                map(
+                                    lambda x: (x.fitness - mean[-1]) ** 2
+                                    / self.populationSize,
+                                    self.generations[j],
+                                )
                             )
                         )
-                    )
-                ]
-            self.max += [maximum]
-            self.min += [minimum]
-            self.mean += [mean]
-            self.std += [std]
-            maximum = []
-            minimum = []
-            mean = []
+                    ]
+                self.max += [maximum]
+                self.min += [minimum]
+                self.mean += [mean]
+                self.std += [std]
+                maximum = []
+                minimum = []
+                mean = []
 
     def plotting(self):
         keys = range(self.ngenerations)
@@ -128,12 +128,12 @@ class GeneticAlgorithms:
         std = np.array(self.std).mean(0)
         ax.plot(mean, "k-", color="green")
         ax.fill_between(keys, mean - std, mean + std, facecolor="blue", alpha=0.5)
-        ax.set_title("Performance Média entre as {} épocas".format(self.nruns))
+        ax.set_title("Performance Média entre as {} populações iniciais".format(self.nruns))
         ax.set_xlabel("Gerações")
         ax.set_ylabel("Aptidão")
         ax.grid()
 
-        for i in [np.random.randint(0, self.nruns)]:
+        for i in [1]:
             fig, (ax1, ax2) = plt.subplots(1, 2)
             mean = np.array(self.mean[i])
             std = np.array(self.std[i])

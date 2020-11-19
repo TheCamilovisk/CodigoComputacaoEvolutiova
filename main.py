@@ -51,6 +51,13 @@ if __name__ == "__main__":
         default=100,
     )
     parser.add_argument(
+        "--nInitialPopulations",
+        help="Number of initial populations",
+        type=int,
+        required=False,
+        default=10,
+    )
+    parser.add_argument(
         "--upperBound", help="Upper bound", type=int, required=False, default=100
     )
     parser.add_argument(
@@ -65,9 +72,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--em", help="Elitism mode", type=int, required=False, default=0
     )
-    parser.add_argument(
-        "--gap", help="GAP", type=float, required=False, default=0
-    )
+    parser.add_argument("--gap", help="GAP", type=float, required=False, default=0)
     args = parser.parse_args()
     precisions = [int(x) for x in eval(args.precisions)]
     ag = geneticAlgorithms.GeneticAlgorithms(
@@ -76,6 +81,7 @@ if __name__ == "__main__":
         args.ngenerations,
         args.nruns,
         args.populationSize,
+        args.nInitialPopulations,
         args.lowerBound,
         args.upperBound,
         args.em,
