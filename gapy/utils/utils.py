@@ -65,3 +65,6 @@ def varStr(lvar, sequence):
             varStr = [sequence[lvar[i - 1] : lvar[i]]]
 
     return varStr
+
+def normalization(x, min_pop, max_pop, maxVal_scale):
+    return ((x-min_pop)/(max_pop-min_pop))/maxVal_scale

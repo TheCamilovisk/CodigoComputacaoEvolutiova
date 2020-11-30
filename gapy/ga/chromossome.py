@@ -52,7 +52,7 @@ class Chromossome:
         fitness = 0.5 - (
             (((sin(sqrt(self.coords[0] ** 2 + self.coords[1] ** 2))) ** 2) - (0.5))
             / (((1) + (0.001) * ((self.coords[0] ** 2 + self.coords[1] ** 2))) ** 2)
-        )
+        ) + 999.
 
         # print('F(X,Y): {} \t'.format(fitness))
 

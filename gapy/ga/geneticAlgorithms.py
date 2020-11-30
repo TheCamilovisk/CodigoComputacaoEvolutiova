@@ -20,13 +20,13 @@ def objective(x, y):
     fitness = 0.5 - (
         (((np.sin(np.sqrt(np.power(x, 2) + np.power(y, 2)))) ** 2) - (0.5))
         / (((1) + (0.001) * ((np.power(x, 2) + np.power(y, 2)))) ** 2)
-    )
+    ) + 999.
     return fitness
 
 
 class GeneticAlgorithms:
     def __init__(
-        self, nvar, lvar, ngenerations, nruns, populationSize, nInitialPopulations, ls, li, elitism_mode=0, gap=0, tc=0.5, tm=8e-4
+        self, nvar, lvar, ngenerations, nruns, populationSize, nInitialPopulations, ls, li, elitism_mode=0, gap=0, tc=0.5, tm=8e-4, selectionMode=0, crossingType=0
     ):
 
         self.nvar = nvar  # Number of variables
@@ -47,6 +47,8 @@ class GeneticAlgorithms:
         self.var = 0
         self.elitism_mode = elitism_mode
         self.gap = gap
+        self.selectionMode = selectionMode
+        self.crossingType = crossingType
 
     def run(self):
 
@@ -55,7 +57,7 @@ class GeneticAlgorithms:
             n = 0
 
             initial = routines.newGeneration(
-                        self.nvar, self.lvar, self.populationSize, self.ls, self.li
+                        self.nvar, self.lvar, self.populationSize, self.ls, self.li, self.selectionMode
                     )
 
             while n < self.nruns:
@@ -65,13 +67,15 @@ class GeneticAlgorithms:
                 m = 1
                 while m < self.ngenerations:
                     # Crossover and mutation routines
-                    self.generations.append(routines.crossingOnePoint(
+                    self.generations.append(routines.crossingOver(
                             self.nvar,
                             self.lvar,
                             self.tc,
                             self.generations[-1],
                             self.ls,
                             self.li,
+                            self.selectionMode,
+                            self.crossingType,
                         ))
                     self.generations[-1] = routines.mutation(self.generations[-1], self.tm)
                     if self.elitism_mode == 0:

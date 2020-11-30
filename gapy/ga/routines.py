@@ -14,7 +14,7 @@ from ..utils import utils
 import gapy.ga.chromossome as ch
 
 
-def newGeneration(nvar, lvar, populationSize, ls, li):
+def newGeneration(nvar, lvar, populationSize, ls, li, selectionMode):
     # Funcao paa gerar uma nova populacao randomica
 
     generation = []
@@ -25,18 +25,28 @@ def newGeneration(nvar, lvar, populationSize, ls, li):
         generation += [ch.Chromossome(nvar, lvar, ls, li)]
         i += 1
 
-    # Soma de todos os Fitness
-    total = sum(map(lambda x: x.fitness, generation))
-
-    # Laco que define a porcentagem de cada fitness
-    for i in range(len(generation)):
-        if i == 0:
-            generation[i].sl = [0, generation[i].fitness / total]
-        else:
-            generation[i].sl = [
-                generation[i - 1].sl[1],
-                generation[i - 1].sl[1] + generation[i].fitness / total,
-            ]
+    if selectionMode == 0:
+        # Soma de todos os Fitness
+        total = sum(map(lambda x: x.fitness, generation))
+        for i in range(len(generation)):
+            if i == 0:
+                generation[i].sl = [0, generation[i].fitness / total]
+            else:
+                generation[i].sl = [
+                    generation[i - 1].sl[1],
+                    generation[i - 1].sl[1] + generation[i].fitness / total,
+                ]
+    elif selectionMode != 0:
+        generation.sort(key=lambda x: x.fitness, reverse=True)
+        total = sum(map(lambda x: utils.normalization(x.fitness, generation[0].fitness, generation[-1].fitness, selectionMode), generation))
+        for i in range(len(generation)):
+            if i == 0:
+                generation[i].sl = [0, utils.normalization(generation[i].fitness, generation[0].fitness, generation[-1].fitness, selectionMode) / total]
+            else:
+                generation[i].sl = [
+                    generation[i - 1].sl[1],
+                    generation[i - 1].sl[1] + utils.normalization(generation[i].fitness, generation[0].fitness, generation[-1].fitness, selectionMode) / total,
+                ]
 
     return generation
 
@@ -73,7 +83,7 @@ def elitism(generation, mode=1, gap=0):
         return generation[: int(gap * len(generation))]
 
 
-def crossingOnePoint(nvar, lvar, tc, generation, ls, li):
+def crossingOver(nvar, lvar, tc, generation, ls, li, selectionMode=0, crossingType=0):
     # Funcao de Crossover
 
     cGeneration = []
@@ -85,9 +95,24 @@ def crossingOnePoint(nvar, lvar, tc, generation, ls, li):
         p2 = utils.list2str(p[1])
 
         if rd.random() <= tc:
-            point = rd.randint(1, sum(lvar) - 2)
-            b1 = p1[:point] + p2[point:]
-            b2 = p2[:point] + p1[point:]
+            if crossingType == 0:
+                point = rd.randint(1, sum(lvar) - 2)
+                b1 = p1[:point] + p2[point:]
+                b2 = p2[:point] + p1[point:]
+            elif crossingType == 1:
+                point = [rd.randint(1, sum(lvar) - 2), rd.randint(1, sum(lvar) - 2)]
+                if point[0] == point[1]:
+                    while point[0] == point[1]:
+                        point = [rd.randint(1, sum(lvar) - 2), rd.randint(1, sum(lvar) - 2)]
+                point.sort()
+                aux1 = p1[point[0]:point[1]]
+                aux2 = p2[point[0]:point[1]]
+                b1 = p1[:point[0]] + aux2 + p1[point[1]:]
+                b2 = p2[:point[0]] + aux1 + p2[point[1]:]
+            else:
+                standard = [rd.randint(0,2) for i in range(sum(lvar))]
+                b1 = [p1[i] if standard[i] == 1 else p2[i] for i in range(len(standard))]
+                b2 = [p2[i] if standard[i] == 1 else p1[i] for i in range(len(standard))]
 
             cGeneration += [
                 ch.Chromossome(nvar, lvar, ls, li, list(b1)),
@@ -101,17 +126,30 @@ def crossingOnePoint(nvar, lvar, tc, generation, ls, li):
             ]
         i += 1
 
-    # Define a soma total de todos os Fitness
-    total = sum(map(lambda x: x.fitness, cGeneration))
+    if selectionMode == 0:
+        # Define a soma total de todos os Fitness
+        total = sum(map(lambda x: x.fitness, cGeneration))
 
-    for i in range(len(cGeneration)):
-        if i == 0:
-            cGeneration[i].sl = [0, cGeneration[i].fitness / total]
-        else:
-            cGeneration[i].sl = [
-                cGeneration[i - 1].sl[1],
-                cGeneration[i - 1].sl[1] + cGeneration[i].fitness / total,
-            ]
+        for i in range(len(cGeneration)):
+            if i == 0:
+                cGeneration[i].sl = [0, cGeneration[i].fitness / total]
+            else:
+                cGeneration[i].sl = [
+                    cGeneration[i - 1].sl[1],
+                    cGeneration[i - 1].sl[1] + cGeneration[i].fitness / total,
+                ]
+    else:
+        cGeneration.sort(key=lambda x: x.fitness, reverse=False)
+        total = sum(map(lambda x: utils.normalization(x.fitness, cGeneration[0].fitness, cGeneration[-1].fitness, selectionMode), cGeneration))
+
+        for i in range(len(cGeneration)):
+            if i == 0:
+                cGeneration[i].sl = [0, utils.normalization(cGeneration[i].fitness, cGeneration[0].fitness, cGeneration[-1].fitness, selectionMode) / total]
+            else:
+                cGeneration[i].sl = [
+                    cGeneration[i - 1].sl[1],
+                    cGeneration[i - 1].sl[1] + utils.normalization(cGeneration[i].fitness, cGeneration[0].fitness, cGeneration[-1].fitness, selectionMode) / total,
+                ]
 
     return cGeneration
 
