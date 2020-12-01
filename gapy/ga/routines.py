@@ -37,25 +37,29 @@ def newGeneration(nvar, lvar, populationSize, ls, li, selectionMode):
                     generation[i - 1].sl[1] + generation[i].fitness / total,
                 ]
     elif selectionMode != 0:
-        generation.sort(key=lambda x: x.fitness, reverse=True)
-        total = sum(map(lambda x: utils.normalization(x.fitness, generation[0].fitness, generation[-1].fitness, selectionMode), generation))
+        generation.sort(key=lambda x: x.fitness, reverse=False)
+        total = sum(map(lambda x: utils.normalization(x, len(generation), selectionMode), range(len(generation))))
         for i in range(len(generation)):
             if i == 0:
-                generation[i].sl = [0, utils.normalization(generation[i].fitness, generation[0].fitness, generation[-1].fitness, selectionMode) / total]
+                generation[i].sl = [0, utils.normalization(i, len(generation), selectionMode) / total]
             else:
                 generation[i].sl = [
                     generation[i - 1].sl[1],
-                    generation[i - 1].sl[1] + utils.normalization(generation[i].fitness, generation[0].fitness, generation[-1].fitness, selectionMode) / total,
+                    generation[i - 1].sl[1] + utils.normalization(i, len(generation), selectionMode / total)
                 ]
 
     return generation
 
 
-def selection(generation):
+def selection(generation, selectionMode=0):
     # Funcao de selecao de pais
     while True:
-        x = rd.random()
-        y = rd.random()
+        if selectionMode == 0:
+            x = rd.random()
+            y = rd.random()
+        else:
+            x = rd.random()*generation[-1].sl[1]
+            y = rd.random()*generation[-1].sl[1]
         parents = [0, 0]
 
         for i in range(len(generation)):
@@ -90,7 +94,7 @@ def crossingOver(nvar, lvar, tc, generation, ls, li, selectionMode=0, crossingTy
     i = 0
 
     while i < (len(generation) / 2):
-        p = selection(generation)
+        p = selection(generation, selectionMode)
         p1 = utils.list2str(p[0])
         p2 = utils.list2str(p[1])
 
@@ -140,15 +144,15 @@ def crossingOver(nvar, lvar, tc, generation, ls, li, selectionMode=0, crossingTy
                 ]
     else:
         cGeneration.sort(key=lambda x: x.fitness, reverse=False)
-        total = sum(map(lambda x: utils.normalization(x.fitness, cGeneration[0].fitness, cGeneration[-1].fitness, selectionMode), cGeneration))
+        total = sum(map(lambda x: utils.normalization(x, len(cGeneration), selectionMode), range(len(cGeneration))))
 
         for i in range(len(cGeneration)):
             if i == 0:
-                cGeneration[i].sl = [0, utils.normalization(cGeneration[i].fitness, cGeneration[0].fitness, cGeneration[-1].fitness, selectionMode) / total]
+                cGeneration[i].sl = [0, utils.normalization(i, len(cGeneration), selectionMode) / total]
             else:
                 cGeneration[i].sl = [
                     cGeneration[i - 1].sl[1],
-                    cGeneration[i - 1].sl[1] + utils.normalization(cGeneration[i].fitness, cGeneration[0].fitness, cGeneration[-1].fitness, selectionMode) / total,
+                    cGeneration[i - 1].sl[1] + utils.normalization(i, len(cGeneration), selectionMode) / total
                 ]
 
     return cGeneration
