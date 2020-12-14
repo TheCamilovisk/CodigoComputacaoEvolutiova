@@ -8,12 +8,12 @@ Student: Luan Assis Gonçalves
 ===========================================================================================
 """
 
-from os import read
-from numpy.lib.shape_base import split
-from gapy.ga import geneticAlgorithms
-from gapy.ga import routines
-import numpy as np
 import argparse
+
+import numpy as np
+
+from functions import F6
+from gapy.ga import geneticAlgorithms
 
 
 def calcNumberOfBits(precisions, lowerBound, upperBound):
@@ -60,6 +60,7 @@ if __name__ == "__main__":
         nInitialPopulations,
         lowerBound,
         upperBound,
+        F6,
         em,
         gap,
         tc,

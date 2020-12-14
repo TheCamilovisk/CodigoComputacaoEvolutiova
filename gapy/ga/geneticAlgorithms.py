@@ -27,7 +27,7 @@ def objective(x, y):
 
 class GeneticAlgorithms:
     def __init__(
-        self, nvar, lvar, ngenerations, nruns, populationSize, nInitialPopulations, ls, li, elitism_mode=0, gap=0, tc=0.5, tm=8e-4, selectionMode=0, crossingType=0
+        self, nvar, lvar, ngenerations, nruns, populationSize, nInitialPopulations, ls, li, function, elitism_mode=0, gap=0, tc=0.5, tm=8e-4, selectionMode=0, crossingType=0
     ):
 
         self.nvar = nvar  # Number of variables
@@ -50,6 +50,7 @@ class GeneticAlgorithms:
         self.gap = gap
         self.selectionMode = selectionMode
         self.crossingType = crossingType
+        self.function = function
 
     def run(self):
 
@@ -58,7 +59,7 @@ class GeneticAlgorithms:
             n = 0
 
             initial = routines.newGeneration(
-                        self.nvar, self.lvar, self.populationSize, self.ls, self.li, self.selectionMode
+                        self.nvar, self.lvar, self.populationSize, self.ls, self.li, self.selectionMode, self.function
                     )
 
             while n < self.nruns:
@@ -75,6 +76,7 @@ class GeneticAlgorithms:
                             self.generations[-1],
                             self.ls,
                             self.li,
+                            self.function,
                             self.selectionMode,
                             self.crossingType,
                         ))

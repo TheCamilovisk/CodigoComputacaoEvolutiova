@@ -14,7 +14,7 @@ from ..utils import utils
 import gapy.ga.chromossome as ch
 
 
-def newGeneration(nvar, lvar, populationSize, ls, li, selectionMode):
+def newGeneration(nvar, lvar, populationSize, ls, li, selectionMode, function):
     # Funcao paa gerar uma nova populacao randomica
 
     generation = []
@@ -22,7 +22,7 @@ def newGeneration(nvar, lvar, populationSize, ls, li, selectionMode):
     i = 0
 
     while i < populationSize:
-        generation += [ch.Chromossome(nvar, lvar, ls, li)]
+        generation += [ch.Chromossome(nvar, lvar, ls, li, function)]
         i += 1
 
     if selectionMode == 0:
@@ -87,7 +87,7 @@ def elitism(generation, mode=1, gap=0):
         return generation[: int(gap * len(generation))]
 
 
-def crossingOver(nvar, lvar, tc, generation, ls, li, selectionMode=0, crossingType=0):
+def crossingOver(nvar, lvar, tc, generation, ls, li, function, selectionMode=0, crossingType=0):
     # Funcao de Crossover
 
     cGeneration = []
@@ -119,14 +119,14 @@ def crossingOver(nvar, lvar, tc, generation, ls, li, selectionMode=0, crossingTy
                 b2 = [p2[i] if standard[i] == 1 else p1[i] for i in range(len(standard))]
 
             cGeneration += [
-                ch.Chromossome(nvar, lvar, ls, li, list(b1)),
-                ch.Chromossome(nvar, lvar, ls, li, list(b2)),
+                ch.Chromossome(nvar, lvar, ls, li, function, list(b1)),
+                ch.Chromossome(nvar, lvar, ls, li, function, list(b2)),
             ]
 
         else:
             cGeneration += [
-                ch.Chromossome(nvar, lvar, ls, li, list(p1)),
-                ch.Chromossome(nvar, lvar, ls, li, list(p2)),
+                ch.Chromossome(nvar, lvar, ls, li, function, list(p1)),
+                ch.Chromossome(nvar, lvar, ls, li, function, list(p2)),
             ]
         i += 1
 
@@ -169,6 +169,6 @@ def mutation(generation, tm):
                     generation[i].sequence[j] = 1
                 else:
                     generation[i].sequence[j] = 0
-        generation[i].fitness = generation[i].function()
+        generation[i].fitness = generation[i].function(*generation[i].coords)
 
     return generation
