@@ -77,8 +77,12 @@ class GeneticAlgorithms:
                             self.function,
                             self.selectionMode,
                             self.crossingType,
+                            self.representation,
                         ))
-                    self.generations[-1] = routines.mutation(self.generations[-1], self.tm)
+                    if self.representation == 0:
+                        self.generations[-1] = routines.mutation(self.generations[-1], self.tm)
+                    else:
+                        self.generations[-1] = routines.mutation(self.generations[-1], self.tm, self.ls, self.li)
                     if self.elitism_mode == 0:
                         pass
                     elif self.elitism_mode == 1:

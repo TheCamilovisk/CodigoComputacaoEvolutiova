@@ -87,48 +87,80 @@ def elitism(generation, mode=1, gap=0):
         return generation[: int(gap * len(generation))]
 
 
-def crossingOver(nvar, lvar, tc, generation, ls, li, function, selectionMode=0, crossingType=0):
+def crossingOver(nvar, lvar, tc, generation, ls, li, function, selectionMode=0, crossingType=0, representation=0):
     # Funcao de Crossover
 
     cGeneration = []
     i = 0
 
     while i < (len(generation) / 2):
-        p = selection(generation, selectionMode)
-        p1 = utils.list2str(p[0])
-        p2 = utils.list2str(p[1])
+        if representation == 0:
+            p = selection(generation, selectionMode)
+            p1 = utils.list2str(p[0])
+            p2 = utils.list2str(p[1])
 
-        if rd.random() <= tc:
-            if crossingType == 0:
-                point = rd.randint(1, sum(lvar) - 2)
-                b1 = p1[:point] + p2[point:]
-                b2 = p2[:point] + p1[point:]
-            elif crossingType == 1:
-                point = [rd.randint(1, sum(lvar) - 2), rd.randint(1, sum(lvar) - 2)]
-                if point[0] == point[1]:
-                    while point[0] == point[1]:
-                        point = [rd.randint(1, sum(lvar) - 2), rd.randint(1, sum(lvar) - 2)]
-                point.sort()
-                aux1 = p1[point[0]:point[1]]
-                aux2 = p2[point[0]:point[1]]
-                b1 = p1[:point[0]] + aux2 + p1[point[1]:]
-                b2 = p2[:point[0]] + aux1 + p2[point[1]:]
+            if rd.random() <= tc:
+                if crossingType == 0:
+                    point = rd.randint(1, sum(lvar) - 2)
+                    b1 = p1[:point] + p2[point:]
+                    b2 = p2[:point] + p1[point:]
+                elif crossingType == 1:
+                    point = [rd.randint(1, sum(lvar) - 2), rd.randint(1, sum(lvar) - 2)]
+                    if point[0] == point[1]:
+                        while point[0] == point[1]:
+                            point = [rd.randint(1, sum(lvar) - 2), rd.randint(1, sum(lvar) - 2)]
+                    point.sort()
+                    aux1 = p1[point[0]:point[1]]
+                    aux2 = p2[point[0]:point[1]]
+                    b1 = p1[:point[0]] + aux2 + p1[point[1]:]
+                    b2 = p2[:point[0]] + aux1 + p2[point[1]:]
+                else:
+                    standard = [rd.randint(0,2) for i in range(sum(lvar))]
+                    b1 = [p1[i] if standard[i] == 1 else p2[i] for i in range(len(standard))]
+                    b2 = [p2[i] if standard[i] == 1 else p1[i] for i in range(len(standard))]
+
+                cGeneration += [
+                    ch.Chromossome(nvar, lvar, ls, li, function, list(b1)),
+                    ch.Chromossome(nvar, lvar, ls, li, function, list(b2)),
+                ]
+
             else:
-                standard = [rd.randint(0,2) for i in range(sum(lvar))]
-                b1 = [p1[i] if standard[i] == 1 else p2[i] for i in range(len(standard))]
-                b2 = [p2[i] if standard[i] == 1 else p1[i] for i in range(len(standard))]
-
-            cGeneration += [
-                ch.Chromossome(nvar, lvar, ls, li, function, list(b1)),
-                ch.Chromossome(nvar, lvar, ls, li, function, list(b2)),
-            ]
-
+                cGeneration += [
+                    ch.Chromossome(nvar, lvar, ls, li, function, list(p1)),
+                    ch.Chromossome(nvar, lvar, ls, li, function, list(p2)),
+                ]
+            i += 1
         else:
-            cGeneration += [
-                ch.Chromossome(nvar, lvar, ls, li, function, list(p1)),
-                ch.Chromossome(nvar, lvar, ls, li, function, list(p2)),
-            ]
-        i += 1
+            p = selection(generation, selectionMode)
+
+            if rd.random() <= tc:
+                point = rd.randint(1, lvar)
+                if crossingType == 0:
+                    b1 = p[0][:point] + p[1][point:]
+                    b2 = p[1][:point] + p[0][point:]
+                
+                elif crossingType == 1:
+                    pass
+                
+                else:
+                    standard = [rd.randint(0,2) for i in range(lvar)]
+                    b1 = [p[0][i] if standard[i] == 1 else p[1][i] for i in range(len(standard))]
+                    b2 = [p[1][i] if standard[i] == 1 else p[0][i] for i in range(len(standard))]
+                
+                cGeneration += [
+                    ch.Chromossome(nvar, lvar, ls, li, function, list(b1), representation),
+                    ch.Chromossome(nvar, lvar, ls, li, function, list(b2), representation),
+                ]
+
+            else:
+                cGeneration += [
+                    ch.Chromossome(nvar, lvar, ls, li, function, list(p[0]), representation),
+                    ch.Chromossome(nvar, lvar, ls, li, function, list(p[1]), representation),
+                ]
+            i += 1
+                
+                
+
 
     if selectionMode == 0:
         # Define a soma total de todos os Fitness
@@ -158,17 +190,25 @@ def crossingOver(nvar, lvar, tc, generation, ls, li, function, selectionMode=0, 
     return cGeneration
 
 
-def mutation(generation, tm):
+def mutation(generation, tm, ls=None, li=None):
     # Funcao de Mutacao
+
+    if ls == None and li == None:
+        flag = False
+    else:
+        flag = True
 
     for i in range(len(generation)):
         for j in range(len(generation[i].sequence)):
             x = rd.random()
             if x <= tm:
-                if generation[i].sequence[j] == 0:
-                    generation[i].sequence[j] = 1
+                if flag == True:
+                    if generation[i].sequence[j] == 0:
+                        generation[i].sequence[j] = 1
+                    else:
+                        generation[i].sequence[j] = 0
                 else:
-                    generation[i].sequence[j] = 0
+                    generation[i].sequence[j] = np.random.rand()*(ls-li)+li
         generation[i].fitness = generation[i].function(*generation[i].coords)
 
     return generation
