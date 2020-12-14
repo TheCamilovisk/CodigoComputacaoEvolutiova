@@ -44,6 +44,8 @@ def randomSequence(lvar):
 
     return list(map(lambda i: x[i] * rd.randrange(0, 2), range(sum(lvar))))
 
+def randomSequenceReal(lvar, ls, li):
+    return (np.random.rand(lvar,)*(ls-li)+li).tolist()
 
 def list2str(sequence):
     # Converte lista para string

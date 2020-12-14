@@ -14,15 +14,15 @@ from ..utils import utils
 import gapy.ga.chromossome as ch
 
 
-def newGeneration(nvar, lvar, populationSize, ls, li, selectionMode, function):
+def newGeneration(nvar, lvar, populationSize, ls, li, selectionMode, function, representation):
     # Funcao paa gerar uma nova populacao randomica
 
     generation = []
-    x = np.ones((sum(lvar)), int)
+    # x = np.ones((sum(lvar)), int)
     i = 0
-
+    
     while i < populationSize:
-        generation += [ch.Chromossome(nvar, lvar, ls, li, function)]
+        generation += [ch.Chromossome(nvar, lvar, ls, li, function, None, representation)]
         i += 1
 
     if selectionMode == 0:

@@ -16,18 +16,15 @@ from numpy.core.fromnumeric import argmax
 from gapy.ga import routines
 import matplotlib.pyplot as plt
 
+from functions import F6
 
-def objective(x, y):
-    fitness = 0.5 - (
-        (((np.sin(np.sqrt(np.power(x, 2) + np.power(y, 2)))) ** 2) - (0.5))
-        / (((1) + (0.001) * ((np.power(x, 2) + np.power(y, 2)))) ** 2)
-    ) + 999.
-    return fitness
+
+objective = F6
 
 
 class GeneticAlgorithms:
     def __init__(
-        self, nvar, lvar, ngenerations, nruns, populationSize, nInitialPopulations, ls, li, function, elitism_mode=0, gap=0, tc=0.5, tm=8e-4, selectionMode=0, crossingType=0
+        self, nvar, lvar, ngenerations, nruns, populationSize, nInitialPopulations, ls, li, function, elitism_mode=0, gap=0, tc=0.5, tm=8e-4, selectionMode=0, crossingType=0, representation=0
     ):
 
         self.nvar = nvar  # Number of variables
@@ -51,6 +48,7 @@ class GeneticAlgorithms:
         self.selectionMode = selectionMode
         self.crossingType = crossingType
         self.function = function
+        self.representation = representation
 
     def run(self):
 
@@ -59,7 +57,7 @@ class GeneticAlgorithms:
             n = 0
 
             initial = routines.newGeneration(
-                        self.nvar, self.lvar, self.populationSize, self.ls, self.li, self.selectionMode, self.function
+                        self.nvar, self.lvar, self.populationSize, self.ls, self.li, self.selectionMode, self.function, self.representation
                     )
 
             while n < self.nruns:

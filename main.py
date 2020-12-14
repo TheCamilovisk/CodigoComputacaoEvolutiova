@@ -48,12 +48,12 @@ if __name__ == "__main__":
     parser.add_argument("--cfg_file", help="Path to config file", type=str, required=True)
     args = parser.parse_args()
 
-    nvar,lowerBound,upperBound,precisions,ngenerations,nruns,populationSize,nInitialPopulations,em,gap,tc,tm,selectionMode,crossingType=readCFG(args.cfg_file)
+    nvar,lowerBound,upperBound,precisions,ngenerations,nruns,populationSize,nInitialPopulations,em,gap,tc,tm,selectionMode,crossingType,representation=readCFG(args.cfg_file)
 
     # precisions = [int(x) for x in eval(precisions)]
     ag = geneticAlgorithms.GeneticAlgorithms(
         nvar,
-        calcNumberOfBits(precisions, lowerBound, upperBound),
+        nvar if representation == 1 else calcNumberOfBits(precisions, lowerBound, upperBound),
         ngenerations,
         nruns,
         populationSize,
@@ -67,6 +67,7 @@ if __name__ == "__main__":
         tm,
         selectionMode,
         crossingType,
+        representation,
     )
     ag.run()
     ag.plotting()
