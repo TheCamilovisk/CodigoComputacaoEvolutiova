@@ -91,9 +91,9 @@ def crossingOver(nvar, lvar, tc, generation, ls, li, function, selectionMode=0, 
     # Funcao de Crossover
 
     cGeneration = []
-    i = 0
+    populationSize = len(generation)
 
-    while i < (len(generation) / 2):
+    while len(cGeneration) <= len(generation):
         if representation == 0:
             p = selection(generation, selectionMode)
             p1 = utils.list2str(p[0])
@@ -129,7 +129,6 @@ def crossingOver(nvar, lvar, tc, generation, ls, li, function, selectionMode=0, 
                     ch.Chromossome(nvar, lvar, ls, li, function, list(p1)),
                     ch.Chromossome(nvar, lvar, ls, li, function, list(p2)),
                 ]
-            i += 1
         else:
             p = selection(generation, selectionMode)
 
@@ -139,27 +138,37 @@ def crossingOver(nvar, lvar, tc, generation, ls, li, function, selectionMode=0, 
                     b1 = p[0][:point] + p[1][point:]
                     b2 = p[1][:point] + p[0][point:]
                 
+                    cGeneration += [
+                        ch.Chromossome(nvar, lvar, ls, li, function, list(b1), representation),
+                        ch.Chromossome(nvar, lvar, ls, li, function, list(b2), representation),
+                    ]
+                
                 elif crossingType == 1:
                     pass
                 
-                else:
+                elif crossingType == 2:
                     standard = [rd.randint(0,2) for i in range(lvar)]
                     b1 = [p[0][i] if standard[i] == 1 else p[1][i] for i in range(len(standard))]
                     b2 = [p[1][i] if standard[i] == 1 else p[0][i] for i in range(len(standard))]
                 
-                cGeneration += [
-                    ch.Chromossome(nvar, lvar, ls, li, function, list(b1), representation),
-                    ch.Chromossome(nvar, lvar, ls, li, function, list(b2), representation),
-                ]
+                    cGeneration += [
+                        ch.Chromossome(nvar, lvar, ls, li, function, list(b1), representation),
+                        ch.Chromossome(nvar, lvar, ls, li, function, list(b2), representation),
+                    ]
+
+                else:
+                    b = [(g1 + g2) / 2 for g1, g2 in zip(p[0], p[1])]
+
+                    cGeneration.append(ch.Chromossome(nvar, lvar, ls, li, function, list(b), representation))
 
             else:
                 cGeneration += [
                     ch.Chromossome(nvar, lvar, ls, li, function, list(p[0]), representation),
                     ch.Chromossome(nvar, lvar, ls, li, function, list(p[1]), representation),
                 ]
-            i += 1
-                
-                
+    
+
+    cGeneration = cGeneration[:len(generation)]             
 
 
     if selectionMode == 0:
