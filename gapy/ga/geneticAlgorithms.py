@@ -11,13 +11,13 @@ Docente: Prof. Dr. Roberto Celio Limao de Oliveira
 # AQUI EH IMPLEMENTADA A CLASSE DO AG
 
 
-import numpy as np
-from numpy.core.fromnumeric import argmax
-from gapy.ga import routines
+import os
+
 import matplotlib.pyplot as plt
-
+import numpy as np
 from functions import F6
-
+from gapy.ga import routines
+from numpy.core.fromnumeric import argmax
 
 objective = F6
 
@@ -130,10 +130,10 @@ class GeneticAlgorithms:
                 minimum = []
                 mean = []
 
-    def plotting(self):
+    def plotting(self, output_folder, prefix):
         keys = range(self.ngenerations)
         
-        fig, ax = plt.subplots(1, 1)
+        fig, ax = plt.subplots(1, 1, figsize=(10, 6))
         mean = np.array(self.mean).mean(0)
         max_val = np.array(self.max).mean(0)
         std = np.array(self.std).mean(0)
@@ -145,10 +145,12 @@ class GeneticAlgorithms:
         ax.set_xlabel("Gerações")
         ax.set_ylabel("Aptidão")
         ax.grid()
+        fig_name = os.path.join(output_folder, f"{prefix}_desempenho_50_geracoes.png")
+        fig.savefig(fig_name, bbox_inches="tight")
 
         i = argmax([max(x) for x in self.max]) #cGeneration.sorted(key=lambda x: x.fitness, reverse=False)
 
-        fig, (ax1, ax2) = plt.subplots(1, 2)
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 6))
         mean = np.array(self.mean[i])
         std = np.array(self.std[i])
         ax2.plot(mean, "k-", color="green")
@@ -166,92 +168,99 @@ class GeneticAlgorithms:
         ax1.set_ylabel("Aptidão")
         ax1.legend()
         ax1.grid()
+        fig_name = os.path.join(output_folder, f"{prefix}_desempenho_1_geracao.png")
+        fig.savefig(fig_name, bbox_inches="tight")
 
-        x = np.arange(-100, 100, 1)
-        xx, yy = np.meshgrid(x, x)
-        z = objective(xx, yy)
+        if self.nvar <= 2:
 
-        gCoords = np.array([[c.coords for c in gen] for gen in self.generations])
+            x = np.arange(-100, 100, 1)
+            xx, yy = np.meshgrid(x, x)
+            z = objective(xx, yy)
 
-        fig, ((ax11, ax12, ax13), (ax21, ax22, ax23)) = plt.subplots(2, 3)
-        fig.suptitle("AG Evolution")
+            gCoords = np.array([[c.coords for c in gen] for gen in self.generations])
 
-        ax11.contourf(xx, yy, z)
-        gen_i = 0
-        gen = gCoords[gen_i]
-        fitness = objective(gen[:, 0], gen[:, 1])
-        max_x, max_y = gen[fitness.argmax()]
-        min_x, min_y = gen[fitness.argmin()]
-        ax11.scatter(gen[:, 0], gen[:, 1], c="black")
-        ax11.scatter(max_x, max_y, c="blue")
-        ax11.scatter(min_x, min_y, c="red")
-        ax11.set(xlim=(-100, 99))
-        ax11.set(ylim=(-100, 99))
-        ax11.set(title=f"Generation {gen_i + 1}")
+            fig, ((ax11, ax12, ax13), (ax21, ax22, ax23)) = plt.subplots(2, 3, figsize=(10, 6))
+            fig.suptitle("AG Evolution")
 
-        ax12.contourf(xx, yy, z)
-        gen_i = 9
-        gen = gCoords[gen_i]
-        fitness = objective(gen[:, 0], gen[:, 1])
-        max_x, max_y = gen[fitness.argmax()]
-        min_x, min_y = gen[fitness.argmin()]
-        ax12.scatter(gen[:, 0], gen[:, 1], c="black")
-        ax12.scatter(max_x, max_y, c="blue")
-        ax12.scatter(min_x, min_y, c="red")
-        ax12.set(xlim=(-100, 99))
-        ax12.set(ylim=(-100, 99))
-        ax12.set(title=f"Generation {gen_i + 1}")
+            ax11.contourf(xx, yy, z)
+            gen_i = 0
+            gen = gCoords[gen_i]
+            fitness = objective(gen[:, 0], gen[:, 1])
+            max_x, max_y = gen[fitness.argmax()]
+            min_x, min_y = gen[fitness.argmin()]
+            ax11.scatter(gen[:, 0], gen[:, 1], c="black")
+            ax11.scatter(max_x, max_y, c="blue")
+            ax11.scatter(min_x, min_y, c="red")
+            ax11.set(xlim=(-100, 99))
+            ax11.set(ylim=(-100, 99))
+            ax11.set(title=f"Generation {gen_i + 1}")
 
-        ax13.contourf(xx, yy, z)
-        gen_i = 19
-        gen = gCoords[gen_i]
-        fitness = objective(gen[:, 0], gen[:, 1])
-        max_x, max_y = gen[fitness.argmax()]
-        min_x, min_y = gen[fitness.argmin()]
-        ax13.scatter(gen[:, 0], gen[:, 1], c="black")
-        ax13.scatter(max_x, max_y, c="blue")
-        ax13.scatter(min_x, min_y, c="red")
-        ax13.set(xlim=(-100, 99))
-        ax13.set(ylim=(-100, 99))
-        ax13.set(title=f"Generation {gen_i + 1}")
+            ax12.contourf(xx, yy, z)
+            gen_i = 9
+            gen = gCoords[gen_i]
+            fitness = objective(gen[:, 0], gen[:, 1])
+            max_x, max_y = gen[fitness.argmax()]
+            min_x, min_y = gen[fitness.argmin()]
+            ax12.scatter(gen[:, 0], gen[:, 1], c="black")
+            ax12.scatter(max_x, max_y, c="blue")
+            ax12.scatter(min_x, min_y, c="red")
+            ax12.set(xlim=(-100, 99))
+            ax12.set(ylim=(-100, 99))
+            ax12.set(title=f"Generation {gen_i + 1}")
 
-        ax21.contourf(xx, yy, z)
-        gen_i = 29
-        gen = gCoords[gen_i]
-        fitness = objective(gen[:, 0], gen[:, 1])
-        max_x, max_y = gen[fitness.argmax()]
-        min_x, min_y = gen[fitness.argmin()]
-        ax21.scatter(gen[:, 0], gen[:, 1], c="black")
-        ax21.scatter(max_x, max_y, c="blue")
-        ax21.scatter(min_x, min_y, c="red")
-        ax21.set(xlim=(-100, 99))
-        ax21.set(ylim=(-100, 99))
-        ax21.set(title=f"Generation {gen_i + 1}")
+            ax13.contourf(xx, yy, z)
+            gen_i = 19
+            gen = gCoords[gen_i]
+            fitness = objective(gen[:, 0], gen[:, 1])
+            max_x, max_y = gen[fitness.argmax()]
+            min_x, min_y = gen[fitness.argmin()]
+            ax13.scatter(gen[:, 0], gen[:, 1], c="black")
+            ax13.scatter(max_x, max_y, c="blue")
+            ax13.scatter(min_x, min_y, c="red")
+            ax13.set(xlim=(-100, 99))
+            ax13.set(ylim=(-100, 99))
+            ax13.set(title=f"Generation {gen_i + 1}")
 
-        ax22.contourf(xx, yy, z)
-        gen_i = 39
-        gen = gCoords[gen_i]
-        fitness = objective(gen[:, 0], gen[:, 1])
-        max_x, max_y = gen[fitness.argmax()]
-        min_x, min_y = gen[fitness.argmin()]
-        ax22.scatter(gen[:, 0], gen[:, 1], c="black")
-        ax22.scatter(max_x, max_y, c="blue")
-        ax22.scatter(min_x, min_y, c="red")
-        ax22.set(xlim=(-100, 99))
-        ax22.set(ylim=(-100, 99))
-        ax22.set(title=f"Generation {gen_i + 1}")
+            ax21.contourf(xx, yy, z)
+            gen_i = 29
+            gen = gCoords[gen_i]
+            fitness = objective(gen[:, 0], gen[:, 1])
+            max_x, max_y = gen[fitness.argmax()]
+            min_x, min_y = gen[fitness.argmin()]
+            ax21.scatter(gen[:, 0], gen[:, 1], c="black")
+            ax21.scatter(max_x, max_y, c="blue")
+            ax21.scatter(min_x, min_y, c="red")
+            ax21.set(xlim=(-100, 99))
+            ax21.set(ylim=(-100, 99))
+            ax21.set(title=f"Generation {gen_i + 1}")
 
-        ax23.contourf(xx, yy, z)
-        gen_i = 49
-        gen = gCoords[gen_i]
-        fitness = objective(gen[:, 0], gen[:, 1])
-        max_x, max_y = gen[fitness.argmax()]
-        min_x, min_y = gen[fitness.argmin()]
-        ax23.scatter(gen[:, 0], gen[:, 1], c="black")
-        ax23.scatter(max_x, max_y, c="blue")
-        ax23.scatter(min_x, min_y, c="red")
-        ax23.set(xlim=(-100, 99))
-        ax23.set(ylim=(-100, 99))
-        ax23.set(title=f"Generation {gen_i + 1}")
+            ax22.contourf(xx, yy, z)
+            gen_i = 39
+            gen = gCoords[gen_i]
+            fitness = objective(gen[:, 0], gen[:, 1])
+            max_x, max_y = gen[fitness.argmax()]
+            min_x, min_y = gen[fitness.argmin()]
+            ax22.scatter(gen[:, 0], gen[:, 1], c="black")
+            ax22.scatter(max_x, max_y, c="blue")
+            ax22.scatter(min_x, min_y, c="red")
+            ax22.set(xlim=(-100, 99))
+            ax22.set(ylim=(-100, 99))
+            ax22.set(title=f"Generation {gen_i + 1}")
+
+            ax23.contourf(xx, yy, z)
+            gen_i = 49
+            gen = gCoords[gen_i]
+            fitness = objective(gen[:, 0], gen[:, 1])
+            max_x, max_y = gen[fitness.argmax()]
+            min_x, min_y = gen[fitness.argmin()]
+            ax23.scatter(gen[:, 0], gen[:, 1], c="black")
+            ax23.scatter(max_x, max_y, c="blue")
+            ax23.scatter(min_x, min_y, c="red")
+            ax23.set(xlim=(-100, 99))
+            ax23.set(ylim=(-100, 99))
+            ax23.set(title=f"Generation {gen_i + 1}")
+
+            fig_name = os.path.join(output_folder, f"{prefix}_evolucao.png")
+            fig.savefig(fig_name, bbox_inches="tight")
 
         plt.show()
