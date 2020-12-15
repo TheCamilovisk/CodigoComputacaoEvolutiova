@@ -12,7 +12,7 @@ import argparse
 
 import numpy as np
 
-from functions import F6
+from functions import F6, F6_1, F6_2
 from gapy.ga import geneticAlgorithms
 
 
@@ -48,7 +48,9 @@ if __name__ == "__main__":
     parser.add_argument("--cfg_file", help="Path to config file", type=str, required=True)
     args = parser.parse_args()
 
-    nvar,lowerBound,upperBound,precisions,ngenerations,nruns,populationSize,nInitialPopulations,em,gap,tc,tm,selectionMode,crossingType,representation=readCFG(args.cfg_file)
+    functions = [F6, F6_1, F6_2]
+
+    nvar,lowerBound,upperBound,precisions,ngenerations,nruns,populationSize,nInitialPopulations,em,gap,tc,tm,selectionMode,crossingType,representation,func=readCFG(args.cfg_file)
 
     # precisions = [int(x) for x in eval(precisions)]
     ag = geneticAlgorithms.GeneticAlgorithms(
@@ -60,7 +62,7 @@ if __name__ == "__main__":
         nInitialPopulations,
         lowerBound,
         upperBound,
-        F6,
+        functions[func],
         em,
         gap,
         tc,

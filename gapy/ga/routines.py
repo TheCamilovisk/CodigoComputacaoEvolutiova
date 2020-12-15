@@ -133,8 +133,8 @@ def crossingOver(nvar, lvar, tc, generation, ls, li, function, selectionMode=0, 
             p = selection(generation, selectionMode)
 
             if rd.random() <= tc:
-                point = rd.randint(1, lvar)
                 if crossingType == 0:
+                    point = rd.randint(1, lvar)
                     b1 = p[0][:point] + p[1][point:]
                     b2 = p[1][:point] + p[0][point:]
                 
