@@ -202,16 +202,16 @@ def crossingOver(nvar, lvar, tc, generation, ls, li, function, selectionMode=0, 
 def mutation(generation, tm, ls=None, li=None):
     # Funcao de Mutacao
 
-    if ls == None and li == None:
-        flag = False
-    else:
-        flag = True
+    # if ls == None and li == None:
+    #     flag = False
+    # else:
+    #     flag = True
 
     for i in range(len(generation)):
         for j in range(len(generation[i].sequence)):
             x = rd.random()
             if x <= tm:
-                if flag == True:
+                if ls == None or li == None:
                     if generation[i].sequence[j] == 0:
                         generation[i].sequence[j] = 1
                     else:
