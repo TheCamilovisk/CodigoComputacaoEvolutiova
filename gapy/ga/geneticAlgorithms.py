@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from functions import F6
 from gapy.ga import routines
+from gapy.utils import utils
 from numpy.core.fromnumeric import argmax
 
 objective = F6
@@ -24,7 +25,23 @@ objective = F6
 
 class GeneticAlgorithms:
     def __init__(
-        self, nvar, lvar, ngenerations, nruns, populationSize, nInitialPopulations, ls, li, function, elitism_mode=0, gap=0, tc=0.5, tm=8e-4, selectionMode=0, crossingType=0, representation=0
+        self,
+        nvar,
+        lvar,
+        ngenerations,
+        nruns,
+        populationSize,
+        nInitialPopulations,
+        ls,
+        li,
+        function,
+        elitism_mode=0,
+        gap=0,
+        tc=0.5,
+        tm=8e-4,
+        selectionMode=0,
+        crossingType=0,
+        representation=0
     ):
 
         self.nvar = nvar  # Number of variables
@@ -40,6 +57,8 @@ class GeneticAlgorithms:
         self.min = []  # Minimum
         self.mean = []  # Mean
         self.std = []
+        self.mdg = []
+        self.mda = []
         self.ls = ls  # Upper bound
         self.li = li  # Lower bound
         self.var = 0
@@ -98,6 +117,9 @@ class GeneticAlgorithms:
                 minimum = []
                 mean = []
                 std = []
+
+                mdg = []
+                mda = []
                 for j in range(i, i + self.ngenerations):
                     maximum += [float(max(map(lambda x: x.fitness, self.generations[j])))]
                     minimum += [float(min(map(lambda x: x.fitness, self.generations[j])))]
@@ -122,16 +144,45 @@ class GeneticAlgorithms:
                             )
                         )
                     ]
+                    mdg += [utils.mdg_diversity(self.generations[j], self.representation)]
+                    mda += [utils.mda_diversity(self.generations[j])]
+
                 self.max += [maximum]
                 self.min += [minimum]
                 self.mean += [mean]
                 self.std += [std]
+                self.mdg += [mdg]
+                self.mda += [mda]
                 maximum = []
                 minimum = []
                 mean = []
 
     def plotting(self, output_folder, prefix):
         keys = range(self.ngenerations)
+        
+        fig, ax = plt.subplots(1, 1, figsize=(10, 6))
+        mean_mdg = np.array(self.mdg).mean(0)
+        std_mdg = np.array(self.mdg).std(0)
+        ax.plot(mean_mdg, "k-", color="green")
+        ax.fill_between(keys, mean_mdg - std_mdg, mean_mdg + std_mdg, facecolor="blue", alpha=0.5)
+        ax.set_title("Diversidade genotípica entre as {} populações iniciais".format(self.nInitialPopulations))
+        ax.set_xlabel("Gerações")
+        ax.set_ylabel("Diversidade")
+        ax.grid()
+        fig_name = os.path.join(output_folder, f"{prefix}_mdg_50_geracoes.png")
+        fig.savefig(fig_name, bbox_inches="tight")
+        
+        fig, ax = plt.subplots(1, 1, figsize=(10, 6))
+        mean_mda = np.array(self.mda).mean(0)
+        std_mda = np.array(self.mda).std(0)
+        ax.plot(mean_mda, "k-", color="green")
+        ax.fill_between(keys, mean_mda - std_mda, mean_mda + std_mda, facecolor="blue", alpha=0.5)
+        ax.set_title("Diversidade fenotípica entre as {} populações iniciais".format(self.nInitialPopulations))
+        ax.set_xlabel("Gerações")
+        ax.set_ylabel("Diversidade")
+        ax.grid()
+        fig_name = os.path.join(output_folder, f"{prefix}_mda_50_geracoes.png")
+        fig.savefig(fig_name, bbox_inches="tight")
         
         fig, ax = plt.subplots(1, 1, figsize=(10, 6))
         mean = np.array(self.mean).mean(0)

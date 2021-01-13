@@ -70,3 +70,30 @@ def varStr(lvar, sequence):
 
 def normalization(x, pop_len, inc):
     return 1 + inc*x
+
+def hamming_distance(seq1, seq2):
+    assert len(seq1) == len(seq2)
+    return sum(a1 != a2 for a1, a2 in zip(seq1, seq2))
+
+def euclidian_distance(seq1, seq2):
+    assert len(seq1) == len(seq2)
+    squared_sums = [(a2 - a1) ** 2 for a1, a2 in zip(seq1, seq2)]
+    return np.sqrt(np.sum(squared_sums))
+
+def mdg_diversity(pop, repr):
+    distances = []
+    for i, crom1 in enumerate(pop[:-1]):
+        for j, crom2 in enumerate(pop[i+1:]):
+            if repr == 0:   # binary representation
+                distances.append(hamming_distance(crom1.sequence, crom2.sequence))
+            else:
+                distances.append(euclidian_distance(crom1.coords, crom2.coords))
+    
+    len_pop = len(pop)
+    diversity = np.sum(distances) * 2 / ((len_pop - 1) * len_pop)
+
+    return diversity
+
+def mda_diversity(pop):
+    apt = np.array([c.fitness for c in pop])
+    return apt.mean() / apt.max()
